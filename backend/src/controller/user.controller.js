@@ -59,12 +59,16 @@ export const loginUser = async (req, res) => {
       });
     }
 
+    // generate JWT Token
+    const token = user.generateJWTToken();
+
     // delete password field
     delete user._doc.password;
 
     return res.status(200).json({
       message: "User loggedin successfully ...",
       user: user,
+      token: token,
     });
   } catch (err) {
     console.log(err);
