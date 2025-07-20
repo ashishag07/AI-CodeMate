@@ -18,3 +18,11 @@ export const getProjectById = async (id, userId) => {
 export const getProjectsByUserId = async (userId) => {
   return await ProjectModel.find({ users: userId });
 };
+
+export const updateUsersInProject = async (projectId, users) => {
+  return await ProjectModel.findByIdAndUpdate(
+    projectId,
+    { $addToSet: { users: { $each: users } } },
+    { new: true }
+  ).populate("users");
+};

@@ -3,6 +3,7 @@ import * as projectController from "../controller/project.controller.js";
 import {
   createProjectValidation,
   getProjectByIdValidation,
+  updateUsersInProjectValidation,
 } from "../validator/project.validator.js";
 
 const projectRouter = express.Router();
@@ -17,14 +18,19 @@ projectRouter.post(
 projectRouter.get("/all", projectController.getAllProjectsController);
 
 projectRouter.get(
+  "/user-projects",
+  projectController.getUserProjectsController
+);
+
+projectRouter.get(
   "/:id",
   getProjectByIdValidation,
   projectController.getProjectByIdController
 );
-
-projectRouter.get(
-  "/user-projects",
-  projectController.getUserProjectsController
+projectRouter.put(
+  "/add-users",
+  updateUsersInProjectValidation,
+  projectController.updateUsersInProjectController
 );
 
 export default projectRouter;

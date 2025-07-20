@@ -116,17 +116,80 @@ export const getUserProjectsController = async (req, res) => {
     const user = await UserModel.findOne({ email: email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        status: false,
+        message: "Project retrieval failed !! Authenticated user not found",
+      });
     }
 
     const projects = await projectRepo.getProjectsByUserId(user._id);
 
     return res.status(200).json({
+      status: true,
       message: "User projects retrieved successfully",
       projects,
     });
   } catch (error) {
     console.error("Error retrieving user projects:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      status: false,
+      message: "User projects retrieval failed !! Internal server error",
+      error: error,
+    });
+  }
+};
+
+export const updateUsersInProjectController = async (req, res) => {
+  // Handle validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      status: false,
+      message: "Project update failed !! Validation failed ...",
+      error: errors.array(),
+    });
+  }
+
+  const { projectId, users } = req.body;
+  const email = req.user.email;
+
+  try {
+    // find authenticated user by email
+    const user = await UserModel.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({
+        status: false,
+        message: "Project update failed !! Authenticated user not found",
+      });
+    }
+
+    // find if the user is authorized to update the project
+    const project = await projectRepo.getProjectById(projectId, user._id);
+    if (!project) {
+      return res.status(404).json({
+        status: false,
+        message:
+          "Project update failed !! Project not found or user not authorized",
+      });
+    }
+
+    // Update users in the project
+    const updatedProject = await projectRepo.updateUsersInProject(
+      projectId,
+      users
+    );
+
+    return res.status(200).json({
+      status: true,
+      message: "Project users updated successfully",
+      project: updatedProject,
+    });
+  } catch (error) {
+    console.error("Error updating project users:", error);
+    return res.status(500).json({
+      status: false,
+      message: "Project update failed !! Internal server error",
+      error: error,
+    });
   }
 };
