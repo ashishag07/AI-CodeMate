@@ -1,4 +1,4 @@
-import UserModel from "./user.model.js";
+import UserModel from "../model/user.model.js";
 
 export const addNewUser = async (email, password) => {
   const hashedPassword = await UserModel.hashPassword(password);
@@ -9,9 +9,9 @@ export const addNewUser = async (email, password) => {
   return await new UserModel(userObj).save();
 };
 
-export const findUser = async (email, withPassword = false) => {
+export const findUserByEmail = async (email, withPassword = false) => {
   if (withPassword) {
-    return await UserModel.findOne({ email: email }).select("password");
+    return await UserModel.findOne({ email: email }).select("+password");
   }
   return await UserModel.findOne({ email: email });
 };
