@@ -1,5 +1,4 @@
 import { body, param } from "express-validator";
-import { mongo } from "mongoose";
 
 export const createProjectValidation = [
   body("name")
@@ -15,7 +14,5 @@ export const createProjectValidation = [
 ];
 
 export const getProjectByIdValidation = [
-  param("id")
-    .custom((value) => mongo.isValidObjectId(value))
-    .withMessage("Invalid Project ID format"),
+  param("id").isMongoId().withMessage("Invalid project ID format"),
 ];

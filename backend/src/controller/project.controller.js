@@ -48,19 +48,27 @@ export const getAllProjectsController = async (req, res) => {
   try {
     const projects = await projectRepo.getAllProjects();
     return res.status(200).json({
+      status: true,
       message: "Projects retrieved successfully",
       projects,
     });
   } catch (error) {
     console.error("Error retrieving projects:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      status: false,
+      message: "Error in fetching projects !! Internal server error",
+      error: error,
+    });
   }
 };
 
 export const getProjectByIdController = async (req, res) => {
+  // Handle validation errors
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
+      status: false,
+      message: "Project retrieval failed !! Validation failed ...",
       error: errors.array(),
     });
   }
@@ -71,22 +79,33 @@ export const getProjectByIdController = async (req, res) => {
     const user = await UserModel.findOne({ email: email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        status: false,
+        message: "Project retrieval failed !! Authenticated user not found ...",
+      });
     }
 
     const project = await projectRepo.getProjectById(id, user._id);
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res.status(404).json({
+        status: false,
+        message: "Project retrieval failed !! Project not found",
+      });
     }
 
     return res.status(200).json({
+      status: true,
       message: "Project retrieved successfully",
       project,
     });
   } catch (error) {
     console.error("Error retrieving project:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      status: false,
+      message: "Project retrieval failed !! Internal server error",
+      error: error,
+    });
   }
 };
 
