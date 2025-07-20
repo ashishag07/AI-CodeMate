@@ -15,3 +15,7 @@ export const findUserByEmail = async (email, withPassword = false) => {
   }
   return await UserModel.findOne({ email: email });
 };
+
+export const findAllUsers = async (userId) => {
+  return await UserModel.find({ _id: { $ne: userId } });
+};

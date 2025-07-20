@@ -96,3 +96,36 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  const email = req.user.email; // Get email from authenticated user
+
+  try {
+    // Get the user from email
+    const user = await UserRepo.findUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).json({
+        status: false,
+        message:
+          "Fetching all users failed !! Unauthorized Access !! User not found ...",
+      });
+    }
+
+    // Fetch all users except the authenticated user
+    const users = await UserRepo.findAllUsers(user._id);
+
+    return res.status(200).json({
+      status: true,
+      message: "All users fetched successfully ...",
+      users: users,
+    });
+  } catch (err) {
+    console.log("Error during fetching all users", err);
+    return res.status(400).json({
+      status: false,
+      message: "Fetching all users failed !! Internal Server Error ...",
+      error: err,
+    });
+  }
+};
