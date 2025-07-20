@@ -3,9 +3,12 @@ import UserModel from "../model/user.model.js";
 import { validationResult } from "express-validator";
 
 export const createProjectController = async (req, res) => {
+  // Handle validation errors
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
+      status: false,
+      message: "Project creation failed !! Validation failed ...",
       error: errors.array(),
     });
   }
@@ -16,18 +19,28 @@ export const createProjectController = async (req, res) => {
   try {
     // find the user by email
     const user = await UserModel.findOne({ email: email });
+
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        status: false,
+        message: "Project creation failed !! Authenticated user not found ...",
+      });
     }
 
     const newProject = await projectRepo.createProject(user._id, name);
+
     return res.status(201).json({
+      status: true,
       message: "Project created successfully",
       project: newProject,
     });
   } catch (error) {
     console.error("Error creating project:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      status: false,
+      message: "Project createion failed !! Internal server error ...",
+      error: error,
+    });
   }
 };
 

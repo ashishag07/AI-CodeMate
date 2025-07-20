@@ -3,8 +3,12 @@ import { mongo } from "mongoose";
 
 export const createProjectValidation = [
   body("name")
+    .exists({ checkFalsy: true })
+    .withMessage("Project name is required")
+    .bail()
     .isString()
     .withMessage("Project name must be a string")
+    .bail()
     .trim()
     .isLength({ min: 3, max: 50 })
     .withMessage("Project name must be between 3 and 50 characters"),
