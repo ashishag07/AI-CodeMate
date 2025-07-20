@@ -8,3 +8,8 @@ export const registerUserValidation = [
     .isLength({ min: 3 })
     .withMessage("Password should have at least 3 characters ..."),
 ];
+
+export const userLoginValidation = [
+  body("email").trim().isEmail().withMessage("Email must be valid email ..."),
+  body("password").notEmpty().withMessage("Password is required ..."),
+];

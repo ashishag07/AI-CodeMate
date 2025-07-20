@@ -45,20 +45,24 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
+  // Handle validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      status: false,
+      message: "Login failed !! Validation failed ...",
+      error: errors.array(),
+    });
+  }
+  const { email, password } = req.body;
+
   try {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        error: errors.array(),
-      });
-    }
-    const { email, password } = req.body;
-
-    const user = await UserRepo.findUser(email, true);
+    // check if user exists
+    const user = await UserRepo.findUserByEmail(email, true);
     if (!user) {
       return res.status(400).json({
-        error: "OOps! User is not found ...",
+        status: false,
+        message: "Login failed !! User not found ...",
       });
     }
 
@@ -66,7 +70,8 @@ export const loginUser = async (req, res) => {
     const isVerified = await user.comparePassword(password);
     if (!isVerified) {
       return res.status(400).json({
-        error: "OOps! Invalid password ...",
+        status: false,
+        message: "Login failed !! Invalid password ...",
       });
     }
 
@@ -77,13 +82,16 @@ export const loginUser = async (req, res) => {
     delete user._doc.password;
 
     return res.status(200).json({
-      message: "User loggedin successfully ...",
+      status: true,
+      message: "Login successful !! ...",
       user: user,
       token: token,
     });
   } catch (err) {
-    console.log(err);
+    console.log("Error during login", err);
     return res.status(400).json({
+      status: false,
+      message: "Login Failed !! Internal Server Error ...",
       error: err,
     });
   }
