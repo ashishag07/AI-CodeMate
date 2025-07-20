@@ -19,8 +19,5 @@ userRouter.post("/login", userLoginValidation, UserController.loginUser);
 
 userRouter.get("/all", auth, UserController.getAllUsers);
 
-userRouter.get("/profile", auth, (req, res) => {
-  console.log("Authorization implemented successfully ...");
-  return res.send("profile fetched successfully");
-});
+userRouter.get("/profile", auth, UserController.getUserProfile);
 export default userRouter;

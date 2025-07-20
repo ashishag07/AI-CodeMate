@@ -129,3 +129,11 @@ export const getAllUsers = async (req, res) => {
     });
   }
 };
+
+export const getUserProfile = async (req, res) => {
+  res.status(200).json({
+    status: true,
+    message: "User profile fetched successfully ...",
+    user: req.user, // User is already populated by auth middleware
+  });
+};
