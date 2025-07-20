@@ -19,6 +19,8 @@ const auth = (req, res, next) => {
       });
     }
 
+    req.user = isVerified; // attach user info to request object
+
     next();
   } catch (err) {
     console.log(err);
